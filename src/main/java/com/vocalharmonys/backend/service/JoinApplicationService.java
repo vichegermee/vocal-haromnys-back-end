@@ -2,6 +2,7 @@ package com.vocalharmonys.backend.service;
 
 import com.vocalharmonys.backend.dto.JoinApplicationRequest;
 import com.vocalharmonys.backend.dto.JoinApplicationResponse;
+import com.vocalharmonys.backend.email.EmailService;
 import com.vocalharmonys.backend.entity.JoinApplication;
 import com.vocalharmonys.backend.repository.JoinApplicationRepository;
 import java.util.List;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Service;
 public class JoinApplicationService {
 
     private final JoinApplicationRepository joinApplicationRepository;
+    private final EmailService emailService;
 
-    public JoinApplicationService(JoinApplicationRepository joinApplicationRepository) {
+    public JoinApplicationService(JoinApplicationRepository joinApplicationRepository, EmailService emailService) {
         this.joinApplicationRepository = joinApplicationRepository;
+        this.emailService = emailService;
     }
 
     public List<JoinApplicationResponse> listAll() {
@@ -32,6 +35,8 @@ public class JoinApplicationService {
         application.setMotivation(request.motivation());
         application.setApplicantName(request.applicantName());
         application.setApplicantEmail(request.applicantEmail());
-        return JoinApplicationResponse.from(joinApplicationRepository.save(application));
+        JoinApplication saved = joinApplicationRepository.save(application);
+        emailService.notifyJoinApplication(saved);
+        return JoinApplicationResponse.from(saved);
     }
 }

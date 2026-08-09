@@ -2,6 +2,7 @@ package com.vocalharmonys.backend.service;
 
 import com.vocalharmonys.backend.dto.ReservationRequest;
 import com.vocalharmonys.backend.dto.ReservationResponse;
+import com.vocalharmonys.backend.email.EmailService;
 import com.vocalharmonys.backend.entity.Reservation;
 import com.vocalharmonys.backend.repository.ReservationRepository;
 import java.util.List;
@@ -12,9 +13,11 @@ import org.springframework.stereotype.Service;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final EmailService emailService;
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, EmailService emailService) {
         this.reservationRepository = reservationRepository;
+        this.emailService = emailService;
     }
 
     public List<ReservationResponse> listAll() {
@@ -31,6 +34,8 @@ public class ReservationService {
         reservation.setMessage(request.message());
         reservation.setRequesterName(request.requesterName());
         reservation.setRequesterEmail(request.requesterEmail());
-        return ReservationResponse.from(reservationRepository.save(reservation));
+        Reservation saved = reservationRepository.save(reservation);
+        emailService.notifyReservation(saved);
+        return ReservationResponse.from(saved);
     }
 }

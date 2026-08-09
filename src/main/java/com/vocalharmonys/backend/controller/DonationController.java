@@ -1,5 +1,6 @@
 package com.vocalharmonys.backend.controller;
 
+import com.vocalharmonys.backend.dto.DonationCheckoutResponse;
 import com.vocalharmonys.backend.dto.DonationRequest;
 import com.vocalharmonys.backend.dto.DonationResponse;
 import com.vocalharmonys.backend.service.DonationService;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * The "Faire un don" page. Submitting a donation is public; listing
- * donations back requires a logged-in member — see SecurityConfig.
+ * The "Faire un don" page. Starting a checkout session is public; listing
+ * donations back requires a logged-in member — see SecurityConfig. Actual
+ * payment confirmation happens out-of-band via StripeWebhookController.
  */
 @RestController
 @RequestMapping("/api/donations")
@@ -32,9 +34,9 @@ public class DonationController {
         return donationService.listAll();
     }
 
-    @PostMapping
+    @PostMapping("/checkout-sessions")
     @ResponseStatus(HttpStatus.CREATED)
-    public DonationResponse create(@Valid @RequestBody DonationRequest request) {
-        return donationService.create(request);
+    public DonationCheckoutResponse createCheckoutSession(@Valid @RequestBody DonationRequest request) {
+        return donationService.createCheckoutSession(request);
     }
 }

@@ -32,10 +32,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *    the API, it doesn't expose any data by itself).
  *  - POST /api/auth/login and the public read-only showcase endpoints (choristers,
  *    events, gallery, news, partners, cds) and public form submissions
- *    (donations/reservations/join-applications/cd-orders POST) — no token needed.
+ *    (donations/checkout-sessions, cd-orders/checkout-sessions, reservations,
+ *    join-applications) — no token needed. Reading back a just-placed order's
+ *    summary (GET /api/cd-orders/by-session/**) is also public — it's keyed
+ *    by the unguessable Stripe session id, not the order's sequential id.
+ *  - POST /api/webhooks/stripe — no JWT either, but not "public" in the same
+ *    sense: Stripe authenticates itself via the Stripe-Signature header,
+ *    verified in StripeWebhookController, not a bearer token.
  *  - everything else — must carry a valid {@code Authorization: Bearer <token>}
  *    header. That covers the répertoire, "who am I", every write to the showcase
- *    content, and listing submitted forms back.
+ *    content, and listing submitted forms back (including GET /api/donations and
+ *    GET /api/cd-orders, which now also carry each order's real payment status).
  */
 @Configuration
 @EnableWebSecurity
@@ -78,10 +85,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/news/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/partners/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/cds/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/donations").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/donations/checkout-sessions").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/reservations").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/join-applications").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/cd-orders").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/cd-orders/checkout-sessions").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/cd-orders/by-session/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/webhooks/stripe").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(this::onAuthenticationFailure))

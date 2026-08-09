@@ -10,9 +10,19 @@ public record CdOrderResponse(
         BigDecimal unitPriceSnapshot,
         String customerName,
         String customerEmail,
+        String customerPhone,
         int quantity,
+        String shippingStreet,
+        String shippingPostalCode,
+        String shippingCity,
+        String shippingCountry,
+        String shippingOption,
+        BigDecimal shippingCost,
+        BigDecimal totalAmount,
         String message,
         String status,
+        String paymentStatus,
+        LocalDateTime paidAt,
         LocalDateTime createdAt
 ) {
 
@@ -23,9 +33,19 @@ public record CdOrderResponse(
                 order.getUnitPriceSnapshot(),
                 order.getCustomerName(),
                 order.getCustomerEmail(),
+                order.getCustomerPhone(),
                 order.getQuantity(),
+                order.getShippingStreet(),
+                order.getShippingPostalCode(),
+                order.getShippingCity(),
+                order.getShippingCountry(),
+                order.getShippingOption().name(),
+                order.getShippingCost(),
+                order.getTotalAmount(),
                 order.getMessage(),
                 order.getStatus().name(),
+                order.getPaymentStatus().name(),
+                order.getPaidAt(),
                 order.getCreatedAt()
         );
     }

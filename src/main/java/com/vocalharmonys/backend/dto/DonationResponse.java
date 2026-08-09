@@ -10,6 +10,8 @@ public record DonationResponse(
         String donorName,
         String donorEmail,
         String status,
+        String paymentStatus,
+        LocalDateTime paidAt,
         LocalDateTime createdAt
 ) {
 
@@ -20,6 +22,8 @@ public record DonationResponse(
                 donation.getDonorName(),
                 donation.getDonorEmail(),
                 donation.getStatus().name(),
+                donation.getPaymentStatus().name(),
+                donation.getPaidAt(),
                 donation.getCreatedAt()
         );
     }

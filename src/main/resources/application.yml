@@ -32,6 +32,22 @@ app:
     expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174}
+  stripe:
+    # No safe dev default here, unlike app.jwt.secret above — a fake Stripe
+    # key can't "partially work", so an obviously-invalid placeholder makes
+    # missing config fail loudly (Stripe rejects it) instead of silently.
+    secret-key: ${STRIPE_SECRET_KEY:sk_test_INVALID_SET_STRIPE_SECRET_KEY}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_INVALID_SET_STRIPE_WEBHOOK_SECRET}
+  frontend:
+    # Used to build the Stripe Checkout success/cancel redirect URLs.
+    base-url: ${FRONTEND_BASE_URL:http://localhost:5174}
+  resend:
+    api-key: ${RESEND_API_KEY:re_INVALID_SET_RESEND_API_KEY}
+    # The sandbox sender works without domain verification, but only
+    # delivers to the Resend account owner's own verified email address.
+    from-address: ${RESEND_FROM_ADDRESS:onboarding@resend.dev}
+  mail:
+    admin-recipient: ${ADMIN_NOTIFICATION_EMAIL:viche.germee@gmail.com}
 
 logging:
   level:
