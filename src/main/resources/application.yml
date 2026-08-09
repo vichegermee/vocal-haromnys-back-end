@@ -1,12 +1,12 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
     name: vocal-harmonys-backend
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/vocal_harmonys}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/vocal_harmonys}
     username: ${DB_USERNAME:vocal_harmonys}
     password: ${DB_PASSWORD:vocal_harmonys}
 
