@@ -27,6 +27,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * 401 JSON body instead of Spring's default HTML/redirect.
  *
  * Route rules, in order (first match wins):
+ *  - the Swagger UI and the OpenAPI spec it's generated from — no token needed,
+ *    same reasoning as the public showcase endpoints below (it only describes
+ *    the API, it doesn't expose any data by itself).
  *  - POST /api/auth/login and the public read-only showcase endpoints (choristers,
  *    events, gallery, news, partners, cds) and public form submissions
  *    (donations/reservations/join-applications/cd-orders POST) — no token needed.
@@ -63,6 +66,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/choristers/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()

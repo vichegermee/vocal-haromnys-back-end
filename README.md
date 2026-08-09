@@ -27,6 +27,11 @@ The API listens on `http://localhost:8080`, CORS-open to the Vite dev server
 (`http://localhost:5173`/`5174` by default — see `app.cors.allowed-origins` in
 `application.yml`).
 
+Swagger UI is at `http://localhost:8080/swagger-ui.html` (raw OpenAPI spec at
+`/v3/api-docs`) — both are public (see `OpenApiConfig` / `SecurityConfig`). Every
+protected endpoint is marked with a lock icon; hit `POST /api/auth/login` first, then
+click "Authorize" and paste the returned token in to try them from the UI.
+
 ## How it's organized
 
 This is a classic **layered** architecture — every package holds one layer, and (almost)
