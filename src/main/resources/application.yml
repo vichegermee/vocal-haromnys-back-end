@@ -6,9 +6,9 @@ spring:
     name: vocal-harmonys-backend
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5433/vocal_harmonys}
-    username: ${DB_USERNAME:vocal_harmonys}
-    password: ${DB_PASSWORD:vocal_harmonys}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     # Flyway owns the schema (db/migration) — Hibernate only validates that the
