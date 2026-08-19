@@ -2,8 +2,6 @@ package com.vocalharmonys.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -21,9 +19,11 @@ public class Chorister {
     @Column(nullable = false, length = 150)
     private String name;
 
-    @Enumerated(EnumType.STRING)
+    // Free text, not the 4-value VoicePart enum: the real roster also
+    // includes non-singing roles (Manager, Batterie, Guitare, Pianiste),
+    // and this field is whatever the "Nom - Pupitre" photo file name says.
     @Column(name = "voice_part", nullable = false, length = 20)
-    private VoicePart voicePart;
+    private String voicePart;
 
     @Column(nullable = false, columnDefinition = "text")
     private String description;
@@ -53,11 +53,11 @@ public class Chorister {
         this.name = name;
     }
 
-    public VoicePart getVoicePart() {
+    public String getVoicePart() {
         return voicePart;
     }
 
-    public void setVoicePart(VoicePart voicePart) {
+    public void setVoicePart(String voicePart) {
         this.voicePart = voicePart;
     }
 
