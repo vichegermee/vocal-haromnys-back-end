@@ -58,5 +58,6 @@ public class EventService {
         event.setEventDate(request.eventDate());
         event.setLocation(request.location());
         event.setDescription(request.description());
+        event.setDetailedDescription(request.detailedDescription());
     }
 }

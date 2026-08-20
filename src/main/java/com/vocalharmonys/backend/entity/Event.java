@@ -33,6 +33,11 @@ public class Event {
     @Column(columnDefinition = "text")
     private String description;
 
+    // Longer write-up shown in the "En détail" section — description stays
+    // the short teaser shown on the "À venir" cards.
+    @Column(name = "detailed_description", columnDefinition = "text")
+    private String detailedDescription;
+
     public Event() {
     }
 
@@ -74,5 +79,13 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDetailedDescription() {
+        return detailedDescription;
+    }
+
+    public void setDetailedDescription(String detailedDescription) {
+        this.detailedDescription = detailedDescription;
     }
 }

@@ -8,6 +8,7 @@ public record EventRequest(
         @NotBlank String title,
         @NotNull LocalDate eventDate,
         @NotBlank String location,
-        String description
+        String description,
+        String detailedDescription
 ) {
 }
