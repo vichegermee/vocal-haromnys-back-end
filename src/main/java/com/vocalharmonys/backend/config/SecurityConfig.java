@@ -31,7 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *    same reasoning as the public showcase endpoints below (it only describes
  *    the API, it doesn't expose any data by itself).
  *  - POST /api/auth/login and the public read-only showcase endpoints (choristers,
- *    events, gallery, news, partners, cds, home-banners, about-photos) and public form submissions
+ *    events, gallery, news, partners, cds, home-banners, about-photos, admin-team) and public form submissions
  *    (donations/checkout-sessions, cd-orders/checkout-sessions, reservations,
  *    join-applications) — no token needed. Reading back a just-placed order's
  *    summary (GET /api/cd-orders/by-session/**) is also public — it's keyed
@@ -87,6 +87,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/cds/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/home-banners/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/about-photos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/admin-team/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/donations/checkout-sessions").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/reservations").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/join-applications").permitAll()
