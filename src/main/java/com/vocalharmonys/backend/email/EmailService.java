@@ -28,10 +28,16 @@ public class EmailService {
 
     private final ResendClient resendClient;
     private final String adminRecipient;
+    private final String frontendBaseUrl;
 
-    public EmailService(ResendClient resendClient, @Value("${app.mail.admin-recipient}") String adminRecipient) {
+    public EmailService(
+            ResendClient resendClient,
+            @Value("${app.mail.admin-recipient}") String adminRecipient,
+            @Value("${app.frontend.base-url}") String frontendBaseUrl
+    ) {
         this.resendClient = resendClient;
         this.adminRecipient = adminRecipient;
+        this.frontendBaseUrl = frontendBaseUrl;
     }
 
     @Async
@@ -94,11 +100,34 @@ public class EmailService {
         sendSafely("CD order", order.getId(), subject, html);
     }
 
+    /**
+     * Sends a newly created member their login credentials. {@code
+     * plaintextPassword} only ever exists in memory between {@code
+     * MemberService.create()} generating it and this call — it is not
+     * logged here (see {@code sendSafely}, which never includes the html
+     * body/subject in its log line) or anywhere else.
+     */
+    @Async
+    public void sendMemberCredentials(String toEmail, String fullName, String username, String plaintextPassword) {
+        String subject = "Vos identifiants — Espace membre Vocal Harmony's";
+        String html = "<h2>Bienvenue " + escapeHtml(fullName) + " !</h2>"
+                + "<p>Un compte vient d'être créé pour vous sur l'espace membre de Vocal Harmony's.</p>"
+                + row("Identifiant", username)
+                + row("Mot de passe provisoire", plaintextPassword)
+                + "<p>Connectez-vous ici : <a href=\"" + frontendBaseUrl + "/connexion\">" + frontendBaseUrl + "/connexion</a></p>"
+                + "<p>Nous vous invitons à changer ce mot de passe dès votre première connexion.</p>";
+        sendSafelyTo(List.of(toEmail), "member credentials", null, subject, html);
+    }
+
     private void sendSafely(String kind, Long id, String subject, String html) {
+        sendSafelyTo(List.of(adminRecipient), kind, id, subject, html);
+    }
+
+    private void sendSafelyTo(List<String> to, String kind, Long id, String subject, String html) {
         try {
-            resendClient.send(List.of(adminRecipient), subject, html);
+            resendClient.send(to, subject, html);
         } catch (Exception e) {
-            log.error("Failed to send {} notification email for id={}", kind, id, e);
+            log.error("Failed to send {} email for id={}", kind, id, e);
         }
     }
 

@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +32,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *    same reasoning as the public showcase endpoints below (it only describes
  *    the API, it doesn't expose any data by itself).
  *  - POST /api/auth/login and the public read-only showcase endpoints (choristers,
- *    events, gallery, news, partners, cds, home-banners, about-photos, admin-team) and public form submissions
+ *    events, gallery, news, partners, cds, home-banners, about-photos, admin-team, support-team) and public form submissions
  *    (donations/checkout-sessions, cd-orders/checkout-sessions, reservations,
  *    join-applications) — no token needed. Reading back a just-placed order's
  *    summary (GET /api/cd-orders/by-session/**) is also public — it's keyed
@@ -39,6 +40,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *  - POST /api/webhooks/stripe — no JWT either, but not "public" in the same
  *    sense: Stripe authenticates itself via the Stripe-Signature header,
  *    verified in StripeWebhookController, not a bearer token.
+ *  - PUT /api/members/me/password — any logged-in member (not just admins)
+ *    can change their own password. Listed before the /api/members/** rule
+ *    below since Spring Security uses the first matcher that matches.
+ *  - everything under /api/members/** (listing, creating, deleting, and
+ *    bulk-importing accounts) — super-admin only. This is the one place in
+ *    the API restricted to a specific role rather than just "logged in".
  *  - everything else — must carry a valid {@code Authorization: Bearer <token>}
  *    header. That covers the répertoire, "who am I", every write to the showcase
  *    content, and listing submitted forms back (including GET /api/donations and
@@ -88,15 +95,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/home-banners/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/about-photos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/admin-team/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/support-team/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/donations/checkout-sessions").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/reservations").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/join-applications").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/cd-orders/checkout-sessions").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/cd-orders/by-session/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/webhooks/stripe").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/members/me/password").authenticated()
+                        .requestMatchers("/api/members/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(handling -> handling.authenticationEntryPoint(this::onAuthenticationFailure))
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(this::onAuthenticationFailure)
+                        .accessDeniedHandler(this::onAccessDenied))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -111,5 +123,24 @@ public class SecurityConfig {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(
                 ErrorResponse.of(401, "Authentification requise.")));
+    }
+
+    /**
+     * Reached when a valid, logged-in member hits a route their role doesn't
+     * allow (e.g. a plain MEMBER calling an admin-only /api/members/** route)
+     * — distinct from onAuthenticationFailure, which is for missing/invalid
+     * tokens. Configured explicitly because Spring Security's default
+     * ExceptionTranslationFilter can route an AccessDeniedException through
+     * the authenticationEntryPoint instead of a 403 in some cases.
+     */
+    private void onAccessDenied(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AccessDeniedException accessDeniedException
+    ) throws IOException {
+        response.setStatus(403);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.getWriter().write(objectMapper.writeValueAsString(
+                ErrorResponse.of(403, "Accès refusé.")));
     }
 }

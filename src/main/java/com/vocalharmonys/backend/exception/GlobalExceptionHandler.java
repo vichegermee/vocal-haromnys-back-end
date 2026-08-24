@@ -8,6 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Turns exceptions thrown anywhere in a controller/service into the
@@ -33,6 +34,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse.of(HttpStatus.FORBIDDEN.value(), "Accès refusé."));
+    }
+
+    // Handled explicitly and before the Exception.class catch-all below —
+    // without this, MemberService's ResponseStatusException(CONFLICT, ...)
+    // etc. would be swallowed into a generic 500 by the catch-all instead of
+    // returning the status/message it was actually thrown with.
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatus(ResponseStatusException ex) {
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(ErrorResponse.of(ex.getStatusCode().value(), ex.getReason()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

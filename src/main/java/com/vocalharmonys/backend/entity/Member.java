@@ -33,6 +33,11 @@ public class Member {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
+    // Nullable: the two original demo accounts (marie/jean) predate this
+    // column. Every account created through MemberService.create() sets it.
+    @Column(length = 150)
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role = Role.MEMBER;
@@ -73,6 +78,14 @@ public class Member {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Role getRole() {

@@ -1,11 +1,17 @@
 package com.vocalharmonys.backend.dto;
 
+import com.vocalharmonys.backend.entity.Role;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
+/**
+ * No username or password here on purpose — both are generated server-side
+ * (see MemberService.create()), never supplied by the admin filling the form.
+ */
 public record CreateMemberRequest(
-        @NotBlank(message = "L'identifiant est requis.") String username,
-        @NotBlank @Size(min = 8, message = "Le mot de passe doit contenir au moins 8 caractères.") String password,
-        @NotBlank(message = "Le nom complet est requis.") String fullName
+        @NotBlank(message = "Le prénom est requis.") String firstName,
+        String lastName,
+        @NotBlank @Email(message = "Adresse email invalide.") String email,
+        Role role
 ) {
 }
