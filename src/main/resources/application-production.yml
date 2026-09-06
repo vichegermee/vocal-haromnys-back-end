@@ -1,0 +1,5 @@
+# Overrides applied only when SPRING_PROFILES_ACTIVE=production (see application.yml
+# for the base config that always applies).
+logging:
+  level:
+    com.vocalharmonys.backend: INFO
