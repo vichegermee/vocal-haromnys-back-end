@@ -11,6 +11,7 @@ public record EventResponse(
         String description,
         String detailedDescription,
         String bookingUrl,
+        String posterUrl,
         boolean past
 ) {
 
@@ -23,6 +24,7 @@ public record EventResponse(
                 event.getDescription(),
                 event.getDetailedDescription(),
                 event.getBookingUrl(),
+                event.getPosterUrl(),
                 event.getEventDate().isBefore(LocalDate.now())
         );
     }

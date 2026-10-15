@@ -11,6 +11,7 @@ public record EventRequest(
         @NotBlank String location,
         String description,
         String detailedDescription,
-        @Size(max = 500) String bookingUrl
+        @Size(max = 500) String bookingUrl,
+        @Size(max = 500) String posterUrl
 ) {
 }

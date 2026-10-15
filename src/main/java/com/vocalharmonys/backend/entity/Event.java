@@ -42,6 +42,11 @@ public class Event {
     @Column(name = "booking_url", length = 500)
     private String bookingUrl;
 
+    // Poster shown in the home page's "À la une" spotlight. Any upcoming event
+    // with a poster is eligible; the home page picks the soonest one.
+    @Column(name = "poster_url", length = 500)
+    private String posterUrl;
+
     public Event() {
     }
 
@@ -99,5 +104,13 @@ public class Event {
 
     public void setBookingUrl(String bookingUrl) {
         this.bookingUrl = bookingUrl;
+    }
+
+    public String getPosterUrl() {
+        return posterUrl;
+    }
+
+    public void setPosterUrl(String posterUrl) {
+        this.posterUrl = posterUrl;
     }
 }

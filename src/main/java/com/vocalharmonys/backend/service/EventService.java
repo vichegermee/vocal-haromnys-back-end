@@ -60,5 +60,6 @@ public class EventService {
         event.setDescription(request.description());
         event.setDetailedDescription(request.detailedDescription());
         event.setBookingUrl(request.bookingUrl());
+        event.setPosterUrl(request.posterUrl());
     }
 }
