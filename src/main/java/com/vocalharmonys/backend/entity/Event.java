@@ -38,6 +38,10 @@ public class Event {
     @Column(name = "detailed_description", columnDefinition = "text")
     private String detailedDescription;
 
+    // External ticketing page (e.g. HelloAsso). Null when the event has no online booking.
+    @Column(name = "booking_url", length = 500)
+    private String bookingUrl;
+
     public Event() {
     }
 
@@ -87,5 +91,13 @@ public class Event {
 
     public void setDetailedDescription(String detailedDescription) {
         this.detailedDescription = detailedDescription;
+    }
+
+    public String getBookingUrl() {
+        return bookingUrl;
+    }
+
+    public void setBookingUrl(String bookingUrl) {
+        this.bookingUrl = bookingUrl;
     }
 }

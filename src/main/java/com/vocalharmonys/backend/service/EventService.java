@@ -59,5 +59,6 @@ public class EventService {
         event.setLocation(request.location());
         event.setDescription(request.description());
         event.setDetailedDescription(request.detailedDescription());
+        event.setBookingUrl(request.bookingUrl());
     }
 }

@@ -10,6 +10,7 @@ public record EventResponse(
         String location,
         String description,
         String detailedDescription,
+        String bookingUrl,
         boolean past
 ) {
 
@@ -21,6 +22,7 @@ public record EventResponse(
                 event.getLocation(),
                 event.getDescription(),
                 event.getDetailedDescription(),
+                event.getBookingUrl(),
                 event.getEventDate().isBefore(LocalDate.now())
         );
     }
